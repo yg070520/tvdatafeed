@@ -40,6 +40,7 @@ class TvDatafeed:
         self,
         username: str = None,
         password: str = None,
+        proxy: str = None,
     ) -> None:
         """Create TvDatafeed object
 
@@ -61,6 +62,7 @@ class TvDatafeed:
         self.ws = None
         self.session = self.__generate_session()
         self.chart_session = self.__generate_chart_session()
+        self.proxy = proxy
 
     def __auth(self, username, password):
 
@@ -83,8 +85,19 @@ class TvDatafeed:
 
     def __create_connection(self):
         logging.debug("creating websocket connection")
+        proxy_kwargs = {}
+        if self.proxy:
+            proxy_kwargs = {
+                'http_proxy_host': self.proxy.get('http_proxy_host'),
+                'http_proxy_port': self.proxy.get('http_proxy_port'),
+                'http_proxy_auth': self.proxy.get('http_proxy_auth'),  # (username, password) 或 None
+                'socks_proxy_host': self.proxy.get('socks_proxy_host'),  # 如果使用 SOCKS 代理
+                'socks_proxy_port': self.proxy.get('socks_proxy_port'),  # 如果使用 SOCKS 代理
+            }
+        proxy_kwargs = {k: v for k, v in proxy_kwargs.items() if v is not None}
+        print(f"proxy_kwargs: {proxy_kwargs}")
         self.ws = create_connection(
-            "wss://data.tradingview.com/socket.io/websocket", headers=self.__ws_headers, timeout=self.__ws_timeout
+            "wss://data.tradingview.com/socket.io/websocket", headers=self.__ws_headers, timeout=self.__ws_timeout, **proxy_kwargs
         )
 
     @staticmethod
@@ -185,6 +198,15 @@ class TvDatafeed:
 
         return symbol
 
+    def set_proxy(self, proxy):
+        """set proxy
+
+        Args:
+            proxy (dict): proxy dict
+        """
+        self.proxy = proxy
+        logger.debug(f"proxy set to {self.proxy}")
+        
     def get_hist(
         self,
         symbol: str,
