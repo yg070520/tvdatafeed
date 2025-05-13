@@ -44,7 +44,7 @@ def test_basic_functionality():
     data = tv.get_hist(symbol="AAPL", exchange="NASDAQ", interval=Interval.in_daily, n_bars=30)
     
     if data is not None and not data.empty:
-        print("✅ Basic functionality test passed")
+        print_with_time("✅ Basic functionality test passed")
 
     else:
         print("❌ Basic functionality test failed")
