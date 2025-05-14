@@ -41,15 +41,31 @@ def test_basic_functionality():
     }
     '''
 
-    data = tv.get_hist(symbol="AAPL", exchange="NASDAQ", interval=Interval.in_daily, n_bars=30)
+    data = tv.get_hist(symbol="NVDA", exchange="NASDAQ", interval=Interval.in_daily, n_bars=30)
     
     if data is not None and not data.empty:
-        print_with_time("✅ Basic functionality test passed")
-
-    else:
-        print("❌ Basic functionality test failed")
+        #print_with_time("✅ Basic functionality test passed")
+        return data
+    return None
+    
 
 import time
+
+def tv_add_retry():
+    retimes = 3
+    while retimes > 0:
+        retimes -= 1
+        data = test_basic_functionality()
+        if data is not None and not data.empty:
+            print_with_time("✅ Basic functionality test passed")
+            break
+        else:
+            if retimes == 0:
+                print_with_time("No data received after 3 attempts, exiting...")
+                break
+            print_with_time("retrying...")
+            time.sleep(1)
+
 if __name__ == "__main__":
 
     proxy = {
@@ -62,7 +78,7 @@ if __name__ == "__main__":
     while True:
         tv.set_proxy(proxy)
         try:
-            test_basic_functionality()
+            tv_add_retry()
         except Exception as e:
             print_with_time(f"❌ Basic functionality test failed with exception: {e}")
 
