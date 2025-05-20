@@ -95,7 +95,7 @@ class TvDatafeed:
                 'socks_proxy_port': self.proxy.get('socks_proxy_port'),  # 如果使用 SOCKS 代理
             }
         proxy_kwargs = {k: v for k, v in proxy_kwargs.items() if v is not None}
-        print(f"proxy_kwargs: {proxy_kwargs}")
+        #print(f"proxy_kwargs: {proxy_kwargs}")
         self.ws = create_connection(
             "wss://data.tradingview.com/socket.io/websocket", headers=self.__ws_headers, timeout=self.__ws_timeout, **proxy_kwargs
         )
